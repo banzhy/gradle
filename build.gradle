@@ -1,0 +1,225 @@
+import org.omg.CORBA.portable.Delegate
+
+plugins {
+    id 'java'
+}
+
+/*
+发布构建
+所用任务，artifacts配置构建
+* */
+task publishJar(type: org.gradle.jvm.tasks.Jar)
+def publishFile = file('build/buildile')
+
+version '1.0.0'
+
+artifacts {
+    archives publishJar
+    archives publishFile
+}
+
+uploadArchives {
+    repositories {
+        flatDir{
+            name 'libs'
+            dirs "$projectDir/libs"
+        }
+        mavenLocal()
+    }
+}
+
+/*
+对其所有子项目进行配置，若想连自身一起配置使用allprojects
+* */
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+
+    }
+}
+
+group 'com.ban'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+
+//gradle task(任务)
+task hello{
+    doLast{
+        logger.quiet("logger quiet")
+        logger.lifecycle("logger lifecycle")
+        println 'hello World'
+    }
+}
+
+//自定义gradle wrapper配置参数
+/*task wrapper(type: Wrapper){
+    gradleVersion = '5.6.2'
+}*/
+
+/*
+* Groovy语法
+* << == doLast
+*/
+task printStr {
+    doLast {
+        def str1 = 'single mark'
+        def str2 = "double mark"
+
+        println "单引号定义的字符串类型： " + str1.getClass().name;
+        println "双引号定义的字符串类型： " + str2.getClass().name;
+
+        println "单引号使用EL表达式： ${str1}"
+        println "双引号使用EL表达式： ${str2}"
+    }
+}
+
+task printList{
+    doLast {
+        def numList = [1,2,3,4,5,6]
+        println numList.getClass().name
+
+        println numList[1]
+        println numList[-1]
+        println numList[-2]
+        println numList[1..4]
+
+        numList.each {
+            print it
+        }
+    }
+}
+
+task printMap{
+    doLast {
+        def map1 = ['width' : 1024, 'height' : 2048]
+        println map1.getClass().name
+
+        println map1['width']
+        println map1.height
+
+        map1.each {
+            println "key: ${it.key} && value: ${it.value}"
+        }
+    }
+}
+
+def methodp(int a, int b){
+    println a+b
+}
+
+def methodif(int a, int b){
+    if (a > b){
+        a
+    }else {
+        b
+    }
+}
+
+task printMethod {
+    doLast {
+        methodp 1, 2
+        def add1 = methodif 1, 2
+        def add2 = methodif 5, 3
+
+        println "add1: ${add1}, add2: ${add2}"
+
+    }
+}
+
+class Person {
+    String name;
+
+    Person(){
+        name = "initName"
+    }
+
+    public int getAge(){
+        22
+    }
+}
+
+//JavaBean
+task printJavaBean {
+    doLast {
+        Person person = new Person()
+        println "name is: ${person.name}"
+        person.name = "ban"
+        println "name is: ${person.name}"
+        println "age is: ${person.age}"
+    }
+}
+
+//闭包的创建使用
+def customEach(closure){ //此参数的意思是，传入的为一个闭包代码块
+    //模拟元素迭代
+    for (int i in 1..10){
+        closure(i)
+    }
+}
+
+task printClosure {
+    doLast {
+        customEach{
+            println it
+        }
+    }
+}
+
+//多参数闭包，不能用it
+def eachMap(closure){
+    def map1 = ["name": "zhangsan", "age": 22]
+    map1.each {
+        closure(it.key, it.value)
+    }
+}
+
+task printClosureMap{
+    doLast{
+        eachMap{
+            k, v -> println "${k} is ${v}"
+        }
+    }
+}
+
+/*
+闭包委托：thisObject，owner，delegate
+* */
+def method1(){
+    println "Context this: ${this.getClass()} in root"
+    println "method1 in root"
+}
+
+class Delegate {
+    def method1(){
+        println "Delegate this: ${this.getClass()} in Delegate"
+        println "method1 in Delegate"
+    }
+
+    def test(Closure<Delegate> closure){
+        closure(this)
+    }
+}
+
+task printDelegate {
+    doLast {
+        new Delegate().test{
+            println "thisObject: ${thisObject.getClass()}"
+            println "owner: ${owner.getClass()}"
+            println "delegate: ${delegate.getClass()}"
+
+            method1()
+            it.method1()
+        }
+    }
+}

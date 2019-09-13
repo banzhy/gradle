@@ -1,0 +1,45 @@
+/*
+插件帮助扩展应用的功能，帮助在开发中的项目构建
+1.添加任务：帮助测试，打包，编译
+2.添加依赖配置：添加第三方库依赖
+3.项目中现有对象添加新的扩展属性，方法等 eg android{}
+4.进行一些项目约定
+* */
+
+/*
+第三方发布的作为jar的二进制插件，在应用的时候，必须先在buildscript中配置其classpath才能使用
+* */
+buildscript {
+
+}
+
+//使用二进制插件（实现了org.gradle.api.Plugin），使用plugin关键字， 此插件一般打包jar独立发布
+//他们可以有 id
+plugins { //应用插件
+    //将java插件应用到项目中
+    id 'java'
+}
+
+//使用脚本插件，只是将脚本添加进来，使用from关键字
+apply from: 'version.gradle'
+apply from: 'myPlugin.gradle'
+task printVersionGradle {
+    println "APP version is ${versionName}, APP code is ${versionCode}"
+}
+
+group 'com.ban'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+//仓库
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+//依赖classpath
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile project(':LearnTask')
+}

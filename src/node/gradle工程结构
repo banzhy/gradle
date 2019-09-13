@@ -1,0 +1,29 @@
+build.gradle:
+             Gradle默认构建脚本，执行Gradle命令的时候，会默认加载当前目录下的build.gradle文件
+
+
+Gradle Wrapper：
+               对Gradle的一层包装，便于在团队开发中统一Gradle构建的版本，避免版本不统一带来的问题
+               命令行：gradle wrapper
+
+               文件结构：
+                        gradle
+                        |   |
+                        |    ——wrapper
+                        |         |
+                        |         |--gradle-wrapper.jar                 具体业务逻辑实现的jar
+                        |         |--gradle-wrapper.properties          配置文件，版本等
+                        |
+                        |——gradlew          执行脚本Linux
+                        |——gradlew.bat      执行脚本Win
+
+
+
+
+               gradle-wrapper.properties：
+                        distributionUrl=https\://services.gradle.org/distributions/gradle-5.2.1-all.zip  //Gradle发行版压缩包下载地址
+                                                                                                将bin改为all，可以在开发过程中看到源码
+                        distributionBase=GRADLE_USER_HOME           //Gradle解压后存储的主目录
+                        distributionPath=wrapper/dists              //相对于distributionBase解压后的的Gradleu压缩包路径
+                        zipStorePath=wrapper/dists                  //同distributionBase，但放zip
+                        zipStoreBase=GRADLE_USER_HOME               //同distributionPath，但放zip

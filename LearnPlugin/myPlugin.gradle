@@ -1,0 +1,18 @@
+/*
+自定义插件： 创建任务，创建方法，进行约定等
+若想插件开源：单独创建一个Groovy工程作为开放自定义插件的工程
+* */
+
+apply plugin: myPlugin
+
+class myPlugin implements Plugin<Project>{
+
+    @Override
+    void apply(Project target) {
+        target.task('myPluginTask') {
+            doLast {
+                println "这是一个通过自定义插件的方式创建的任务"
+            }
+        }
+    }
+}

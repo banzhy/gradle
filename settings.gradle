@@ -1,0 +1,12 @@
+/*
+设置文件：
+        初始化以及工程树的配置，大多数作用为配置子工程
+        一个子工程只有在Settings文件中配置了gradle才会识别，才会在构建的时候被包含进去
+* */
+rootProject.name = 'GradleLearn'
+
+include 'LearnTask'
+include 'LearnPlugin'
+include 'JavaGradle'
+include 'AndroidGradle'
+

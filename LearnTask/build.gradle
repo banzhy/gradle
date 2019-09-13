@@ -1,0 +1,167 @@
+plugins {
+    id 'java'
+}
+
+group 'com.ban'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task printHello {
+    doLast {
+        println 'Hello'
+    }
+}
+
+task printWorld {
+    doLast {
+        println "world"
+    }
+}
+
+task dependPH(dependsOn: printHello){
+    doLast {
+        println "main"
+    }
+}
+
+task dependPHW{
+    dependsOn printHello, printWorld
+    doLast {
+        println 'multiTask'
+    }
+}
+
+dependPHW.doFirst {
+    println "i am dependPHW.doFirst"
+}
+
+dependPHW.doLast {
+    println project.hasProperty('printHello')
+}
+
+/*
+自定义属性的作用域更广，可以跨project和task
+还可以应用在SourceSet中
+* */
+ext {
+    phone = '110'
+    address = "YanAn"
+}
+
+task printExt {
+    doLast{
+        println "pthone is ${phone}"
+        println "address is ${address}"
+    }
+}
+
+sourceSets.all {
+    ext.resourceDir = null
+}
+
+sourceSets {
+    main {
+        resourceDir = 'main/res'
+    }
+
+    test {
+        resourceDir = 'test/res'
+    }
+}
+
+/*
+创建task的几种方式
+* */
+
+//1.直接创建，一个参数
+def Task createTask = task(createTask)
+createTask.doLast {
+    println "wo shi bei zhe yang chuang jian de : def Task createTask = task(createTask)"
+}
+
+//2.添加map参数，完成对task的相关配置
+def Task createMapTask = task(createMapTask, group: BasePlugin.BUILD_GROUP)
+createMapTask.doLast {
+    println "wo shi bei zhe yang chuang jian de : def Task createMapTask = task(createMapTask, group: BasePlugin.BUILD_GROUP)"
+}
+
+//3.名称 + 闭包方式
+task createClosureTask {
+    /*
+    初始配置信息：
+    type:
+    overweite:
+    dependsOn:
+    action:
+    description:
+    group:*/
+    description "yan shi ren wu chuang jian"
+    doLast{
+        println "wo shi bei zhe yang chuang jian de : /*\n" +
+                "    初始配置信息：\n" +
+                "    type:\n" +
+                "    overweite:\n" +
+                "    dependsOn:\n" +
+                "    action:\n" +
+                "    description:\n" +
+                "    group:*/"
+    }
+}
+
+/*
+访问任务的方式
+* */
+
+//1.直接访问
+printWorld.doLast {
+    println "wo shi yong task.doLast{} fang wen de"
+}
+
+//2.用TaskContainer集合访问(tasks)
+tasks['printWorld'].doLast {
+    println "wo you yi ci bei fang wen"
+}
+
+def Task myTask = task(myTask)
+myTask.group = BasePlugin.BUILD_GROUP
+myTask.description = 'myTask is zhe yang de'
+myTask.doLast {
+    println 'yi wan cheng task de fen zu fen lei'
+}
+
+//学习task任务的执行顺序
+class CustomTask extends DefaultTask {
+    @TaskAction
+    def doSelf(){
+        println "Task 自己本身在执行 in doSelf"
+    }
+}
+
+def Task myTask2 = task myTask2(type: CustomTask)
+myTask2.doFirst {
+    println "Task 之前执行 doFirst"
+}
+
+myTask2.doLast {
+    println "Task 之后执行 doLast"
+}
+
+myTask2.mustRunAfter(myTask)
+
+/*
+onlyif断言判断task是否执行
+* */
+myTask.onlyIf {
+    def execute = false
+
+    execute
+}

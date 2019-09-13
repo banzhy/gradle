@@ -1,0 +1,8 @@
+# Project exclude paths
+/.gradle/
+/build/
+/JavaGradle/build/
+/LearnPlugin/build/
+/LearnPlugin/build/classes/java/main/
+/LearnTask/build/
+/LearnTask/build/classes/java/main/
